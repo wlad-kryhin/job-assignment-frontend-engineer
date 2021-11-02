@@ -1,4 +1,10 @@
-export default function Settings() {
+import axios from "axios";
+
+export default function Settings({ name, token, logout }) {
+  const logoutSet = () => {
+    axios.defaults.headers.common.Authorization = ``;
+    logout(true);
+  };
   return (
     <>
       <nav className="navbar navbar-light">
@@ -35,6 +41,11 @@ export default function Settings() {
                 Sign up
               </a>
             </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/#/register" onClick={logoutSet}>
+                {name}
+              </a>
+            </li>
           </ul>
         </div>
       </nav>
@@ -66,7 +77,7 @@ export default function Settings() {
                 </fieldset>
               </form>
               <hr />
-              <a className="btn btn-outline-danger" href="/#/logout">
+              <a className="btn btn-outline-danger" href="/#/" onClick={logout}>
                 Or click here to logout.
               </a>
             </div>

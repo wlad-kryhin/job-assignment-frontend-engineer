@@ -1,4 +1,34 @@
-export default function LoginRegister() {
+import { useState, useEffect } from "react";
+import { Redirect } from "react-router";
+export default function LoginRegister({ submit, name }) {
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const handleInputChange = e => {
+    const { value, name } = e.target;
+    switch (name) {
+      case "password":
+        setPassword(value);
+        break;
+      case "email":
+        setEmail(value);
+        break;
+
+      default:
+        return;
+    }
+  };
+  const handleFormSubmit = e => {
+    e.preventDefault();
+
+    submit({
+      user: {
+        email,
+        password,
+      },
+    });
+    e.target.reset();
+    return <Redirect push to="/" />;
+  };
   return (
     <>
       <nav className="navbar navbar-light">
@@ -35,6 +65,9 @@ export default function LoginRegister() {
                 Sign up
               </a>
             </li>
+            <li className="nav-item">
+              <a className="nav-link">{name}</a>
+            </li>
           </ul>
         </div>
       </nav>
@@ -43,26 +76,35 @@ export default function LoginRegister() {
         <div className="container page">
           <div className="row">
             <div className="col-md-6 offset-md-3 col-xs-12">
-              <h1 className="text-xs-center">Sign up</h1>
+              <h1 className="text-xs-center">Log in</h1>
               <p className="text-xs-center">
-                <a href="">Have an account?</a>
+                <a href="">Don*t have an account?</a>
               </p>
 
               <ul className="error-messages">
-                <li>That email is already taken</li>
+                <li>Please login</li>
               </ul>
 
-              <form>
+              <form onSubmit={handleFormSubmit}>
                 <fieldset className="form-group">
-                  <input className="form-control form-control-lg" type="text" placeholder="Your Name" />
+                  <input
+                    className="form-control form-control-lg"
+                    type="text"
+                    placeholder="Email"
+                    name="email"
+                    onChange={handleInputChange}
+                  />
                 </fieldset>
                 <fieldset className="form-group">
-                  <input className="form-control form-control-lg" type="text" placeholder="Email" />
+                  <input
+                    className="form-control form-control-lg"
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    onChange={handleInputChange}
+                  />
                 </fieldset>
-                <fieldset className="form-group">
-                  <input className="form-control form-control-lg" type="password" placeholder="Password" />
-                </fieldset>
-                <button className="btn btn-lg btn-primary pull-xs-right">Sign up</button>
+                <button className="btn btn-lg btn-primary pull-xs-right">login</button>
               </form>
             </div>
           </div>

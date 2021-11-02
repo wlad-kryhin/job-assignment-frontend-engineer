@@ -1,4 +1,18 @@
-export default function Article() {
+import axios from "axios";
+import { useParams } from "react-router";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+export default function Article({ name }) {
+  const [article, setArticle] = useState(null);
+  const { slug } = useParams();
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3000/api/articles/${slug}`)
+      .then(response => setArticle(response.data.article))
+      .catch(error => alert(error.message));
+  }, []);
+
   return (
     <>
       <nav className="navbar navbar-light">
@@ -35,6 +49,12 @@ export default function Article() {
                 Sign up
               </a>
             </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/#/register">
+                Log out
+              </a>
+            </li>
+            <li className="nav-item">{name}</li>
           </ul>
         </div>
       </nav>
@@ -42,38 +62,45 @@ export default function Article() {
       <div className="article-page">
         <div className="banner">
           <div className="container">
-            <h1>How to build webapps that scale</h1>
+            <h1>$</h1>
 
-            <div className="article-meta">
-              <a href="/#/profile/ericsimmons">
-                <img src="http://i.imgur.com/Qr71crq.jpg" />
-              </a>
-              <div className="info">
-                <a href="/#/profile/ericsimmons" className="author">
-                  Eric Simons
-                </a>
-                <span className="date">January 20th</span>
+            {article !== null && (
+              <div className="article-meta">
+                <Link to={`/profile/${article.author.username}`}>
+                  {article.author.image ? (
+                    <img src={article.author.image} />
+                  ) : (
+                    <img src="http://i.imgur.com/Qr71crq.jpg" />
+                  )}
+                </Link>
+                <div className="info">
+                  <Link to={`/profile/${article.author.username}`} className="author">
+                    {article.author.username}
+                  </Link>
+                  <span className="date">{new Date(article.createdAt).toDateString()}</span>
+                </div>
+                <button className="btn btn-sm btn-outline-secondary">
+                  <i className="ion-plus-round" />
+                  &nbsp; Follow {article.author.username} <span className="counter">({article.favoritesCount})</span>
+                </button>
+                &nbsp;&nbsp;
+                <button className="btn btn-sm btn-outline-primary">
+                  <i className="ion-heart" />
+                  &nbsp; Favorite Post <span className="counter">(29)</span>
+                </button>
               </div>
-              <button className="btn btn-sm btn-outline-secondary">
-                <i className="ion-plus-round" />
-                &nbsp; Follow Eric Simons <span className="counter">(10)</span>
-              </button>
-              &nbsp;&nbsp;
-              <button className="btn btn-sm btn-outline-primary">
-                <i className="ion-heart" />
-                &nbsp; Favorite Post <span className="counter">(29)</span>
-              </button>
-            </div>
+            )}
           </div>
         </div>
-
         <div className="container page">
           <div className="row article-content">
-            <div className="col-md-12">
-              <p>Web development technologies have evolved at an incredible clip over the past few years.</p>
-              <h2 id="introducing-ionic">Introducing RealWorld.</h2>
-              <p>It&lsquo;s a great solution for learning how other frameworks work.</p>
-            </div>
+            {article && (
+              <div className="col-md-12">
+                <p>{article.description}</p>
+                <h2 id="introducing-ionic">{article.title}</h2>
+                <p>{article.body}</p>
+              </div>
+            )}
           </div>
 
           <hr />
@@ -84,14 +111,16 @@ export default function Article() {
                 <img src="http://i.imgur.com/Qr71crq.jpg" />
               </a>
               <div className="info">
-                <a href="/#/profile/ericsimmons" className="author">
-                  Eric Simons
-                </a>
+                {article && (
+                  <a href="/#/profile/ericsimmons" className="author">
+                    {article.author.username}
+                  </a>
+                )}
                 <span className="date">January 20th</span>
               </div>
               <button className="btn btn-sm btn-outline-secondary">
                 <i className="ion-plus-round" />
-                &nbsp; Follow Eric Simons
+                &nbsp; Follow
               </button>
               &nbsp;
               <button className="btn btn-sm btn-outline-primary">

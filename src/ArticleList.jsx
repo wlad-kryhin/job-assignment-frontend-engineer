@@ -1,4 +1,16 @@
-export default function ArticleList() {
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+export default function ArticleList({ name }) {
+  const [articles, setArticles] = useState([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/articles")
+      .then(articl => articl.data.articles)
+      .then(data => setArticles(data))
+      .catch(error => alert(error.message));
+  }, []);
   return (
     <>
       <nav className="navbar navbar-light">
@@ -35,6 +47,11 @@ export default function ArticleList() {
                 Sign up
               </a>
             </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/#/register">
+                {name}
+              </a>
+            </li>
           </ul>
         </div>
       </nav>
@@ -65,49 +82,38 @@ export default function ArticleList() {
                 </ul>
               </div>
 
-              <div className="article-preview">
-                <div className="article-meta">
-                  <a href="/#/profile/ericsimmons">
-                    <img src="http://i.imgur.com/Qr71crq.jpg" />
-                  </a>
-                  <div className="info">
-                    <a href="/#/profile/ericsimmons" className="author">
-                      Eric Simons
-                    </a>
-                    <span className="date">January 20th</span>
-                  </div>
-                  <button className="btn btn-outline-primary btn-sm pull-xs-right">
-                    <i className="ion-heart" /> 29
-                  </button>
-                </div>
-                <a href="/#/how-to-build-webapps-that-scale" className="preview-link">
-                  <h1>How to build webapps that scale</h1>
-                  <p>This is the description for the post.</p>
-                  <span>Read more...</span>
-                </a>
-              </div>
-
-              <div className="article-preview">
-                <div className="article-meta">
-                  <a href="/#/profile/albertpai">
-                    <img src="http://i.imgur.com/N4VcUeJ.jpg" />
-                  </a>
-                  <div className="info">
-                    <a href="/#/profile/albertpai" className="author">
-                      Albert Pai
-                    </a>
-                    <span className="date">January 20th</span>
-                  </div>
-                  <button className="btn btn-outline-primary btn-sm pull-xs-right">
-                    <i className="ion-heart" /> 32
-                  </button>
-                </div>
-                <a href="/#/the-song-you-wont-ever-stop-singing" className="preview-link">
-                  <h1>The song you won&lsquo;t ever stop singing. No matter how hard you try.</h1>
-                  <p>This is the description for the post.</p>
-                  <span>Read more...</span>
-                </a>
-              </div>
+              {articles &&
+                articles.map(article => {
+                  return (
+                    <>
+                      <div className="article-preview" key={article.slug}>
+                        <div className="article-meta">
+                          <Link to={`/profile/${article.author.username}`}>
+                            {article.author.image ? (
+                              <img src={article.author.image} />
+                            ) : (
+                              <img src="http://i.imgur.com/Qr71crq.jpg" />
+                            )}
+                          </Link>
+                          <div className="info">
+                            <Link to={`/profile/${article.author.username}`} className="author">
+                              {article.author.username}
+                            </Link>
+                            <span className="date">{new Date(article.createdAt).toDateString()}</span>
+                          </div>
+                          <button className="btn btn-outline-primary btn-sm pull-xs-right">
+                            <i className="ion-heart" /> {article.favoritesCount}
+                          </button>
+                        </div>
+                        <Link to={`/${article.slug}`} className="preview-link">
+                          <h1>{article.title}</h1>
+                          <p>{article.description}</p>
+                          <span>Read more...</span>
+                        </Link>
+                      </div>
+                    </>
+                  );
+                })}
             </div>
 
             <div className="col-md-3">
